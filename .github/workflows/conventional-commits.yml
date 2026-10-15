@@ -1,0 +1,61 @@
+# Enforces Conventional Commits on the server side:
+# - the PR title (it becomes the squash-merge commit message on main)
+# - every commit pushed to the PR branch
+name: Conventional Commits
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  pr-title:
+    name: PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+
+  commits:
+    name: Commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install conventional-pre-commit==4.4.0
+      - name: Check each commit in the PR
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          status=0
+          for sha in $(git rev-list --no-merges "$BASE..$HEAD"); do
+            git log -1 --format=%B "$sha" > msg.txt
+            if ! conventional-pre-commit --strict \
+                feat fix docs style refactor perf test build ci chore revert msg.txt > /dev/null; then
+              echo "::error::$(git log -1 --format='%h %s' "$sha") is not a Conventional Commit"
+              status=1
+            fi
+          done
+          exit $status

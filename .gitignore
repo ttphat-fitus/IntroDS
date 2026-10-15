@@ -1,0 +1,21 @@
+# Secrets
+.env
+
+# Data and binaries must not be committed (project spec)
+data/
+*.sqlite
+*.sqlite-*
+*.parquet
+*.tar
+*.gz
+
+# Local agent instructions
+CLAUDE.md
+AGENTS.md
+.claude/
+
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+.DS_Store

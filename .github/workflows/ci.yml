@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install -r src/requirements.txt ruff==0.17.0
+      - run: ruff check . && ruff format --check .
+      - name: CLI smoke test
+        working-directory: src
+        env:
+          INTRODS_DATA_DIR: ${{ runner.temp }}/data
+        run: |
+          python -m introds --help
+          python -m introds init-db
+          python -m introds spans
