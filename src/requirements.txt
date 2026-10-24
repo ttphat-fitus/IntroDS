@@ -1,8 +1,8 @@
-arxiv>=2.1
+arxiv>=4.0
 requests>=2.32
 python-dotenv>=1.0
 psutil>=6.0
 pandas>=2.2
 pyarrow>=17.0
 huggingface_hub>=0.25
-tqdm>=4.66
+boto3>=1.35

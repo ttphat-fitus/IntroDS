@@ -37,6 +37,7 @@ class _Stage:
     def __init__(self):
         self.wait_s = 0.0
         self.ok = True
+        self.http = []  # status code of every HTTP attempt (see http.request)
 
 
 class RunMetrics:
@@ -55,15 +56,12 @@ class RunMetrics:
         self.member = member
         self.data_dir = data_dir
         self.sample_every = sample_every
-        self.disk_every = (
-            disk_every  # walking the tree is expensive, so sample it less often
-        )
+        self.disk_every = disk_every  # walking the tree is expensive, so sample it less often
         self.config = config or {}
-        self.run_id = (
-            f"{command}-{time.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
-        )
+        self.run_id = f"{command}-{time.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
         self._stop = threading.Event()
         self._lock = threading.Lock()
+        self._pending = []  # timings rows waiting for the next sample
         self._proc = psutil.Process()
 
     def __enter__(self):
@@ -78,7 +76,7 @@ class RunMetrics:
                 self.member,
                 f"{socket.gethostname()} ({platform.platform()})",
                 self.started_at,
-                json.dumps(self.config),
+                json.dumps(self.config, default=str),
             ),
         )
         self.conn.commit()
@@ -99,7 +97,7 @@ class RunMetrics:
         return False
 
     @contextmanager
-    def stage(self, stage, arxiv_id=None, version=None):
+    def stage(self, stage, arxiv_id=None, version=None, n_items=1):
         """Time one unit of work; ok = False on exception or when the caller sets t.ok = False."""
         t = _Stage()
         started_at = time.time()
@@ -110,21 +108,20 @@ class RunMetrics:
             t.ok = False
             raise
         finally:
+            row = (
+                self.run_id,
+                stage,
+                arxiv_id,
+                version,
+                n_items,
+                started_at,
+                time.perf_counter() - t0,
+                t.wait_s,
+                int(t.ok),
+                ",".join(map(str, t.http)) or None,
+            )
             with self._lock:
-                self.conn.execute(
-                    "INSERT INTO timings (run_id, stage, arxiv_id, version, started_at,"
-                    " duration_s, wait_s, ok) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    (
-                        self.run_id,
-                        stage,
-                        arxiv_id,
-                        version,
-                        started_at,
-                        time.perf_counter() - t0,
-                        t.wait_s,
-                        int(t.ok),
-                    ),
-                )
+                self._pending.append(row)
 
     def _rss(self):
         # Include child processes (if multiprocessing is used) to get whole-system RAM
@@ -138,17 +135,22 @@ class RunMetrics:
 
     def _sample(self, force_disk=False):
         now = time.time()
-        if self.data_dir and (
-            force_disk or now - getattr(self, "_disk_at", 0) >= self.disk_every
-        ):
+        if self.data_dir and (force_disk or now - getattr(self, "_disk_at", 0) >= self.disk_every):
             self._disk = dir_size(self.data_dir)
             self._disk_at = now
         with self._lock:
-            self.conn.execute(
-                "INSERT INTO resource_samples (run_id, ts, rss_bytes, disk_bytes) VALUES (?, ?, ?, ?)",
-                (self.run_id, now, self._rss(), getattr(self, "_disk", 0)),
-            )
-            self.conn.commit()  # periodic commit also flushes pending timings rows
+            rows, self._pending = self._pending, []
+        # One short transaction per sample: workers never wait on metrics for long
+        self.conn.executemany(
+            "INSERT INTO timings (run_id, stage, arxiv_id, version, n_items, started_at,"
+            " duration_s, wait_s, ok, http_log) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            rows,
+        )
+        self.conn.execute(
+            "INSERT INTO resource_samples (run_id, ts, rss_bytes, disk_bytes) VALUES (?, ?, ?, ?)",
+            (self.run_id, now, self._rss(), getattr(self, "_disk", 0)),
+        )
+        self.conn.commit()
 
     def _sample_loop(self):
         while not self._stop.wait(self.sample_every):
