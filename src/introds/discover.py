@@ -19,8 +19,18 @@ def _client():
     return arxiv.Client(page_size=BATCH, delay_seconds=config.ARXIV_DELAY, num_retries=5)
 
 
-def _fetch(client, ids):
-    return list(client.results(arxiv.Search(id_list=ids, max_results=len(ids))))
+def _fetch(client, ids, attempts=6, backoff=30.0):
+    """One batch query; arxiv.py gives up after a few quick retries, so back off on HTTP 429/5xx."""
+    for attempt in range(attempts):
+        try:
+            return list(client.results(arxiv.Search(id_list=ids, max_results=len(ids))))
+        except arxiv.HTTPError as exc:
+            if attempt == attempts - 1:
+                raise
+            delay = backoff * 2**attempt
+            print(f"[discover] HTTP {exc.status}, retrying in {delay:.0f}s", flush=True)
+            time.sleep(delay)
+    raise AssertionError("unreachable")
 
 
 def _split_version(short_id):
