@@ -1,0 +1,113 @@
+[18:38:23] versions {'pending': 5930} | s2 {}
+[18:43:23] versions {'no_tex': 1, 'ok': 76, 'pending': 5853} | s2 {'not_found': 4, 'ok': 2696, 'pending': 2300}
+[18:48:23] versions {'no_tex': 1, 'ok': 79, 'pending': 5850} | s2 {'not_found': 4, 'ok': 4096, 'pending': 900}
+[18:53:23] versions {'failed': 2, 'no_tex': 1, 'ok': 82, 'pending': 5845} | s2 {'not_found': 5, 'ok': 4995}
+[18:58:23] versions {'failed': 3, 'no_tex': 1, 'ok': 93, 'pending': 5833} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 18:58:24 +97 versions -> /content/drive/MyDrive/introds-backup/m2
+[19:03:23] versions {'failed': 3, 'no_tex': 2, 'ok': 95, 'pending': 5830} | s2 {'not_found': 5, 'ok': 4995}
+[19:08:23] versions {'failed': 3, 'no_tex': 2, 'ok': 96, 'pending': 5829} | s2 {'not_found': 5, 'ok': 4995}
+[19:13:23] versions {'failed': 3, 'no_tex': 3, 'ok': 102, 'pending': 5822} | s2 {'not_found': 5, 'ok': 4995}
+[19:18:23] versions {'failed': 4, 'no_tex': 3, 'ok': 108, 'pending': 5815} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 19:18:26 +18 versions -> /content/drive/MyDrive/introds-backup/m2
+[19:23:23] versions {'failed': 4, 'no_tex': 4, 'ok': 122, 'pending': 5800} | s2 {'not_found': 5, 'ok': 4995}
+[19:28:23] versions {'failed': 4, 'no_tex': 5, 'ok': 138, 'pending': 5783} | s2 {'not_found': 5, 'ok': 4995}
+[19:33:23] versions {'failed': 4, 'no_tex': 6, 'ok': 143, 'pending': 5777} | s2 {'not_found': 5, 'ok': 4995}
+[19:38:23] versions {'failed': 4, 'no_tex': 10, 'ok': 187, 'pending': 5729} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 19:38:27 +86 versions -> /content/drive/MyDrive/introds-backup/m2
+[19:43:23] versions {'failed': 4, 'missing': 1, 'no_tex': 10, 'ok': 252, 'pending': 5663} | s2 {'not_found': 5, 'ok': 4995}
+[19:48:23] versions {'failed': 4, 'missing': 1, 'no_tex': 12, 'ok': 334, 'pending': 5579} | s2 {'not_found': 5, 'ok': 4995}
+[19:53:23] versions {'failed': 4, 'missing': 1, 'no_tex': 15, 'ok': 416, 'pending': 5494} | s2 {'not_found': 5, 'ok': 4995}
+[19:58:23] versions {'failed': 4, 'missing': 2, 'no_tex': 20, 'ok': 503, 'pending': 5401} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 19:58:29 +330 versions -> /content/drive/MyDrive/introds-backup/m2
+[20:03:23] versions {'failed': 4, 'missing': 2, 'no_tex': 27, 'ok': 588, 'pending': 5309} | s2 {'not_found': 5, 'ok': 4995}
+[20:08:23] versions {'failed': 4, 'missing': 3, 'no_tex': 31, 'ok': 673, 'pending': 5219} | s2 {'not_found': 5, 'ok': 4995}
+[20:13:23] versions {'failed': 4, 'missing': 3, 'no_tex': 31, 'ok': 710, 'pending': 5182} | s2 {'not_found': 5, 'ok': 4995}
+[20:18:23] versions {'failed': 4, 'missing': 4, 'no_tex': 33, 'ok': 789, 'pending': 5100} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 20:18:32 +301 versions -> /content/drive/MyDrive/introds-backup/m2
+[20:23:23] versions {'failed': 4, 'missing': 4, 'no_tex': 35, 'ok': 849, 'pending': 5038} | s2 {'not_found': 5, 'ok': 4995}
+[20:28:23] versions {'failed': 4, 'missing': 4, 'no_tex': 37, 'ok': 909, 'pending': 4976} | s2 {'not_found': 5, 'ok': 4995}
+[20:33:23] versions {'failed': 4, 'missing': 4, 'no_tex': 40, 'ok': 993, 'pending': 4889} | s2 {'not_found': 5, 'ok': 4995}
+[20:38:23] versions {'failed': 4, 'missing': 4, 'no_tex': 45, 'ok': 1062, 'pending': 4815} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 20:38:34 +283 versions -> /content/drive/MyDrive/introds-backup/m2
+[20:43:23] versions {'failed': 4, 'missing': 4, 'no_tex': 49, 'ok': 1132, 'pending': 4741} | s2 {'not_found': 5, 'ok': 4995}
+[20:48:23] versions {'failed': 4, 'missing': 5, 'no_tex': 53, 'ok': 1217, 'pending': 4651} | s2 {'not_found': 5, 'ok': 4995}
+[20:53:23] versions {'failed': 4, 'missing': 7, 'no_tex': 62, 'ok': 1289, 'pending': 4568} | s2 {'not_found': 5, 'ok': 4995}
+[20:58:23] versions {'failed': 4, 'missing': 8, 'no_tex': 67, 'ok': 1369, 'pending': 4482} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 20:58:37 +335 versions -> /content/drive/MyDrive/introds-backup/m2
+[21:03:23] versions {'failed': 4, 'missing': 8, 'no_tex': 70, 'ok': 1452, 'pending': 4396} | s2 {'not_found': 5, 'ok': 4995}
+[21:08:23] versions {'failed': 4, 'missing': 8, 'no_tex': 73, 'ok': 1528, 'pending': 4317} | s2 {'not_found': 5, 'ok': 4995}
+[21:13:23] versions {'failed': 4, 'missing': 8, 'no_tex': 76, 'ok': 1611, 'pending': 4231} | s2 {'not_found': 5, 'ok': 4995}
+[21:18:23] versions {'failed': 4, 'missing': 8, 'no_tex': 82, 'ok': 1687, 'pending': 4149} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 21:18:39 +336 versions -> /content/drive/MyDrive/introds-backup/m2
+[21:23:23] versions {'failed': 4, 'missing': 8, 'no_tex': 87, 'ok': 1767, 'pending': 4064} | s2 {'not_found': 5, 'ok': 4995}
+[21:28:23] versions {'failed': 4, 'missing': 8, 'no_tex': 91, 'ok': 1839, 'pending': 3988} | s2 {'not_found': 5, 'ok': 4995}
+[21:33:23] versions {'failed': 4, 'missing': 8, 'no_tex': 91, 'ok': 1921, 'pending': 3906} | s2 {'not_found': 5, 'ok': 4995}
+[21:38:23] versions {'failed': 4, 'missing': 8, 'no_tex': 92, 'ok': 2004, 'pending': 3822} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 21:38:41 +326 versions -> /content/drive/MyDrive/introds-backup/m2
+[21:43:23] versions {'failed': 4, 'missing': 9, 'no_tex': 99, 'ok': 2068, 'pending': 3750} | s2 {'not_found': 5, 'ok': 4995}
+[21:48:23] versions {'failed': 4, 'missing': 9, 'no_tex': 103, 'ok': 2144, 'pending': 3670} | s2 {'not_found': 5, 'ok': 4995}
+[21:53:23] versions {'failed': 4, 'missing': 10, 'no_tex': 106, 'ok': 2225, 'pending': 3585} | s2 {'not_found': 5, 'ok': 4995}
+[21:58:23] versions {'failed': 4, 'missing': 10, 'no_tex': 107, 'ok': 2300, 'pending': 3509} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 21:58:44 +316 versions -> /content/drive/MyDrive/introds-backup/m2
+[22:03:23] versions {'failed': 4, 'missing': 10, 'no_tex': 108, 'ok': 2386, 'pending': 3422} | s2 {'not_found': 5, 'ok': 4995}
+[22:08:23] versions {'failed': 4, 'missing': 10, 'no_tex': 115, 'ok': 2449, 'pending': 3352} | s2 {'not_found': 5, 'ok': 4995}
+[22:13:23] versions {'failed': 4, 'missing': 10, 'no_tex': 123, 'ok': 2535, 'pending': 3258} | s2 {'not_found': 5, 'ok': 4995}
+[22:18:23] versions {'failed': 4, 'missing': 10, 'no_tex': 125, 'ok': 2602, 'pending': 3189} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 22:18:47 +320 versions -> /content/drive/MyDrive/introds-backup/m2
+[22:23:23] versions {'failed': 4, 'missing': 10, 'no_tex': 129, 'ok': 2670, 'pending': 3117} | s2 {'not_found': 5, 'ok': 4995}
+[22:28:23] versions {'failed': 4, 'missing': 10, 'no_tex': 131, 'ok': 2757, 'pending': 3028} | s2 {'not_found': 5, 'ok': 4995}
+[22:33:23] versions {'failed': 4, 'missing': 10, 'no_tex': 137, 'ok': 2839, 'pending': 2940} | s2 {'not_found': 5, 'ok': 4995}
+[22:38:23] versions {'failed': 4, 'missing': 10, 'no_tex': 138, 'ok': 2922, 'pending': 2856} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 22:38:50 +332 versions -> /content/drive/MyDrive/introds-backup/m2
+[22:43:23] versions {'failed': 4, 'missing': 10, 'no_tex': 140, 'ok': 3010, 'pending': 2766} | s2 {'not_found': 5, 'ok': 4995}
+[22:48:23] versions {'failed': 4, 'missing': 10, 'no_tex': 148, 'ok': 3093, 'pending': 2675} | s2 {'not_found': 5, 'ok': 4995}
+[22:53:23] versions {'failed': 4, 'missing': 10, 'no_tex': 151, 'ok': 3164, 'pending': 2601} | s2 {'not_found': 5, 'ok': 4995}
+[22:58:23] versions {'failed': 4, 'missing': 10, 'no_tex': 151, 'ok': 3236, 'pending': 2529} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 22:58:52 +324 versions -> /content/drive/MyDrive/introds-backup/m2
+[23:03:23] versions {'failed': 4, 'missing': 10, 'no_tex': 159, 'ok': 3281, 'pending': 2476} | s2 {'not_found': 5, 'ok': 4995}
+[23:08:23] versions {'failed': 4, 'missing': 10, 'no_tex': 165, 'ok': 3366, 'pending': 2385} | s2 {'not_found': 5, 'ok': 4995}
+[23:13:23] versions {'failed': 4, 'missing': 10, 'no_tex': 169, 'ok': 3440, 'pending': 2307} | s2 {'not_found': 5, 'ok': 4995}
+[23:18:23] versions {'failed': 4, 'missing': 10, 'no_tex': 170, 'ok': 3507, 'pending': 2239} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 23:18:54 +296 versions -> /content/drive/MyDrive/introds-backup/m2
+[23:23:23] versions {'failed': 4, 'missing': 10, 'no_tex': 172, 'ok': 3576, 'pending': 2168} | s2 {'not_found': 5, 'ok': 4995}
+[23:28:23] versions {'failed': 4, 'missing': 10, 'no_tex': 179, 'ok': 3652, 'pending': 2085} | s2 {'not_found': 5, 'ok': 4995}
+[23:33:23] versions {'failed': 4, 'missing': 10, 'no_tex': 182, 'ok': 3720, 'pending': 2014} | s2 {'not_found': 5, 'ok': 4995}
+[23:38:23] versions {'failed': 4, 'missing': 10, 'no_tex': 186, 'ok': 3805, 'pending': 1925} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 23:38:56 +314 versions -> /content/drive/MyDrive/introds-backup/m2
+[23:43:23] versions {'failed': 4, 'missing': 10, 'no_tex': 192, 'ok': 3865, 'pending': 1859} | s2 {'not_found': 5, 'ok': 4995}
+[23:48:23] versions {'failed': 4, 'missing': 10, 'no_tex': 195, 'ok': 3954, 'pending': 1767} | s2 {'not_found': 5, 'ok': 4995}
+[23:53:23] versions {'failed': 4, 'missing': 10, 'no_tex': 199, 'ok': 4024, 'pending': 1693} | s2 {'not_found': 5, 'ok': 4995}
+[23:58:23] versions {'failed': 4, 'missing': 10, 'no_tex': 200, 'ok': 4096, 'pending': 1620} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 23:58:58 +307 versions -> /content/drive/MyDrive/introds-backup/m2
+[00:03:23] versions {'failed': 4, 'missing': 10, 'no_tex': 202, 'ok': 4184, 'pending': 1530} | s2 {'not_found': 5, 'ok': 4995}
+[00:08:23] versions {'failed': 4, 'missing': 10, 'no_tex': 203, 'ok': 4271, 'pending': 1442} | s2 {'not_found': 5, 'ok': 4995}
+[00:13:23] versions {'failed': 4, 'missing': 10, 'no_tex': 208, 'ok': 4351, 'pending': 1357} | s2 {'not_found': 5, 'ok': 4995}
+[00:18:23] versions {'failed': 4, 'missing': 10, 'no_tex': 211, 'ok': 4435, 'pending': 1270} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 00:19:01 +347 versions -> /content/drive/MyDrive/introds-backup/m2
+[00:23:23] versions {'failed': 4, 'missing': 10, 'no_tex': 216, 'ok': 4512, 'pending': 1188} | s2 {'not_found': 5, 'ok': 4995}
+[00:28:23] versions {'failed': 4, 'missing': 10, 'no_tex': 223, 'ok': 4584, 'pending': 1109} | s2 {'not_found': 5, 'ok': 4995}
+[00:33:23] versions {'failed': 4, 'missing': 10, 'no_tex': 226, 'ok': 4658, 'pending': 1032} | s2 {'not_found': 5, 'ok': 4995}
+[00:38:23] versions {'failed': 4, 'missing': 10, 'no_tex': 231, 'ok': 4695, 'pending': 990} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 00:39:03 +283 versions -> /content/drive/MyDrive/introds-backup/m2
+[00:43:23] versions {'failed': 4, 'missing': 10, 'no_tex': 234, 'ok': 4729, 'pending': 953} | s2 {'not_found': 5, 'ok': 4995}
+[00:48:23] versions {'failed': 5, 'missing': 10, 'no_tex': 234, 'ok': 4741, 'pending': 940} | s2 {'not_found': 5, 'ok': 4995}
+[00:53:23] versions {'failed': 5, 'missing': 10, 'no_tex': 234, 'ok': 4772, 'pending': 909} | s2 {'not_found': 5, 'ok': 4995}
+[00:58:24] versions {'failed': 5, 'missing': 10, 'no_tex': 235, 'ok': 4783, 'pending': 897} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 00:59:05 +84 versions -> /content/drive/MyDrive/introds-backup/m2
+[01:03:24] versions {'failed': 6, 'missing': 10, 'no_tex': 235, 'ok': 4804, 'pending': 875} | s2 {'not_found': 5, 'ok': 4995}
+[01:08:24] versions {'failed': 6, 'missing': 11, 'no_tex': 237, 'ok': 4865, 'pending': 811} | s2 {'not_found': 5, 'ok': 4995}
+[01:13:24] versions {'failed': 6, 'missing': 11, 'no_tex': 240, 'ok': 4952, 'pending': 721} | s2 {'not_found': 5, 'ok': 4995}
+[01:18:24] versions {'failed': 6, 'missing': 11, 'no_tex': 244, 'ok': 5032, 'pending': 637} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 01:19:08 +264 versions -> /content/drive/MyDrive/introds-backup/m2
+[01:23:24] versions {'failed': 6, 'missing': 11, 'no_tex': 247, 'ok': 5112, 'pending': 554} | s2 {'not_found': 5, 'ok': 4995}
+[01:28:24] versions {'failed': 6, 'missing': 11, 'no_tex': 252, 'ok': 5164, 'pending': 497} | s2 {'not_found': 5, 'ok': 4995}
+[01:33:24] versions {'failed': 6, 'missing': 11, 'no_tex': 255, 'ok': 5238, 'pending': 420} | s2 {'not_found': 5, 'ok': 4995}
+[01:38:24] versions {'failed': 6, 'missing': 11, 'no_tex': 258, 'ok': 5300, 'pending': 355} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 01:39:10 +286 versions -> /content/drive/MyDrive/introds-backup/m2
+[01:43:24] versions {'failed': 6, 'missing': 12, 'no_tex': 261, 'ok': 5369, 'pending': 282} | s2 {'not_found': 5, 'ok': 4995}
+[01:48:24] versions {'failed': 6, 'missing': 12, 'no_tex': 268, 'ok': 5430, 'pending': 214} | s2 {'not_found': 5, 'ok': 4995}
+[01:53:24] versions {'failed': 6, 'missing': 12, 'no_tex': 270, 'ok': 5489, 'pending': 153} | s2 {'not_found': 5, 'ok': 4995}
+[01:58:24] versions {'failed': 6, 'missing': 12, 'no_tex': 271, 'ok': 5574, 'pending': 67} | s2 {'not_found': 5, 'ok': 4995}
+[backup] 01:59:13 +294 versions -> /content/drive/MyDrive/introds-backup/m2
+[02:03:06] versions {'missing': 12, 'no_tex': 273, 'ok': 5645} | s2 {'not_found': 5, 'ok': 4995}
+[02:03:08] versions {'missing': 12, 'no_tex': 273, 'ok': 5645} | s2 {'not_found': 5, 'ok': 4995}
