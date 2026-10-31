@@ -3,6 +3,20 @@
 Short records of choices that are not obvious from the code. Newest first.
 Format: date - decision - why - alternatives considered.
 
+## 2026-10-30 - Milestone 2 interpretation of unspecified points
+- **`.bbl` files** are fetched (`fetch-bbl`) for versions that have a `.bbl` but no `.bib` (2,913 versions, ~10% had no bibliography source at all) and used only to fill that gap. Result: all 2,913 fetched; versions without any bibliography source fell from 3,322 to 445 (1.5%).
+- **Element kinds:** `document`, `heading`, `list`, `item`, `sentence`, `formula`, `figure`. Tables, algorithms and code listings are figures (the spec treats tables as figures).
+- **Root edge:** every version has its own root (`#root1`, `#root2`, ... as in the spec example) whose `parent_id` is itself, because `parent_id` is non-null.
+- **Levels** are relative to the sectioning commands a paper uses (no `\chapter` -> sections are level 1 under the root). The abstract and acknowledgements environments are top-level headings.
+- **Lists:** `enumerate` and `description` are handled like `itemize`; list and item contents are their text so identical lists deduplicate.
+- **References section** = `thebibliography`, `\bibliography` / `\printbibliography`, or a heading titled References / Bibliography; skipped with its subsections.
+- **Bibliography scope:** from `.bib` files only cited keys are kept (BibTeX prints only those), unless `\nocite{*}`.
+- **Reference identity:** same DOI, same normalized title (>= 12 alphanumerics), or same key. The latest version's key wins and fields are unioned latest-first (matches the spec's `vaswani2017` -> `vit_transformer` example). `\cite{}` keys are renamed before element deduplication, so sentences differing only by a renamed key merge.
+- **Element identity:** exact match of (kind, cleaned content); duplicate edges within a version are dropped (the hierarchy table has no order column).
+- **Root file ties:** prefer a file with `\begin{document}`, then main/ms/paper/manuscript/article.tex, then the most includes.
+- **Macros** (`\newcommand`) are not expanded; `\makeatletter ... \makeatother` blocks are dropped as code.
+- **Parser technology:** a regex/scanner pipeline instead of a TeX parser library (pylatexenc, TexSoup): it parses ~90 papers/s on 4 cores, and huge `.bib` files (one ships the 46 MB ACL Anthology) are indexed by key so only cited entries are parsed.
+
 ## 2026-10-24 - S3 bulk archive for the latest version of each paper
 - **Why:** each monthly S3 tar holds one source per paper (`<yymm>/<id>.gz`, no version number) as of packing time. Streaming the tars that cover a range takes minutes (~85 MB/s from Colab), so only older versions and post-packing revisions go through export.arxiv.org's 3 s/request limit. The version is inferred as the latest one submitted before the member's mtime; `verify-s3` matched 15/15 samples file by file.
 - **Result (m2):** 5,000 of 5,930 versions from S3 in 4.3 min, 930 from export in 61 min; 1 h 08 min end to end, against ~6-7 h export-only (m5).

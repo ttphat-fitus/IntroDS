@@ -86,6 +86,57 @@ CREATE TABLE IF NOT EXISTS s2_references (
     PRIMARY KEY (arxiv_id, ref_idx)
 );
 
+-- Files fetched after the main crawl, e.g. .bbl bibliographies for versions without a .bib
+CREATE TABLE IF NOT EXISTS extra_fetch (
+    arxiv_id   TEXT NOT NULL,
+    version    INTEGER NOT NULL,
+    kind       TEXT NOT NULL,           -- bbl
+    status     TEXT NOT NULL,           -- ok | none (archive has no such file) | missing | failed
+    n_files    INTEGER,
+    attempts   INTEGER NOT NULL DEFAULT 0,
+    error      TEXT,
+    fetched_at REAL,
+    PRIMARY KEY (arxiv_id, version, kind)
+);
+
+-- Milestone 2 parsing results (see parser.py); elements / hierarchy / bibtex live in parsed/*.json.gz
+CREATE TABLE IF NOT EXISTS parse_papers (
+    arxiv_id          TEXT PRIMARY KEY,
+    status            TEXT NOT NULL,      -- ok | empty (no version has TeX) | failed
+    n_versions        INTEGER,
+    n_versions_parsed INTEGER,
+    n_nodes           INTEGER,            -- tree nodes over all versions, before deduplication
+    n_elements        INTEGER,            -- distinct elements after deduplication
+    n_entries_raw     INTEGER,            -- bibliography entries over all versions
+    n_entries         INTEGER,            -- unified entries after deduplication
+    bytes_out         INTEGER,
+    duration_s        REAL,
+    parsed_at         REAL
+);
+
+CREATE TABLE IF NOT EXISTS parse_versions (
+    arxiv_id    TEXT NOT NULL,
+    version     INTEGER NOT NULL,
+    status      TEXT NOT NULL,            -- ok | empty | failed
+    error       TEXT,
+    root_file   TEXT,
+    n_tex       INTEGER,                  -- .tex files in the archive
+    n_used      INTEGER,                  -- .tex files on the compilation path
+    n_unused    INTEGER,
+    n_nodes     INTEGER,
+    n_headings  INTEGER,
+    n_sentences INTEGER,
+    n_formulas  INTEGER,
+    n_figures   INTEGER,
+    n_lists     INTEGER,
+    n_items     INTEGER,
+    max_depth   INTEGER,
+    bib_sources TEXT,                     -- bib, bibitem, bbl (comma separated)
+    n_entries   INTEGER,
+    has_appendix INTEGER,
+    PRIMARY KEY (arxiv_id, version)
+);
+
 -- Performance measurements (see metrics.py)
 CREATE TABLE IF NOT EXISTS timings (
     run_id     TEXT NOT NULL,
@@ -120,6 +171,7 @@ TABLES = [
     "files",
     "s2_papers",
     "s2_references",
+    "extra_fetch",
     "timings",
     "resource_samples",
 ]
@@ -137,7 +189,11 @@ def connect(path):
 
 
 # Columns added after the first crawls; older databases get them on connect
-MIGRATIONS = {"timings": {"http_log": "TEXT"}, "versions": {"origin": "TEXT"}}
+MIGRATIONS = {
+    "timings": {"http_log": "TEXT"},
+    "versions": {"origin": "TEXT"},
+    "parse_versions": {"has_appendix": "INTEGER", "n_items": "INTEGER"},
+}
 
 
 def _columns(conn, table, schema="main"):
@@ -160,6 +216,8 @@ def merge(conn, other_path):
         for table in TABLES:
             # Only shared columns: the other database may predate a migration
             other_cols = set(_columns(conn, table, "other"))
+            if not other_cols:  # table created after the other database was made
+                continue
             cols = ", ".join(c for c in _columns(conn, table) if c in other_cols)
             conn.execute(f"INSERT OR IGNORE INTO {table} ({cols}) SELECT {cols} FROM other.{table}")
         conn.commit()

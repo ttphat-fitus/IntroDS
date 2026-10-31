@@ -6,7 +6,21 @@ import threading
 import time
 from pathlib import Path
 
-from . import backup, config, db, discover, export, ranges, refs, s3bulk, sources, stats
+from . import (
+    backup,
+    config,
+    db,
+    discover,
+    export,
+    extras,
+    parser,
+    parsestats,
+    ranges,
+    refs,
+    s3bulk,
+    sources,
+    stats,
+)
 from .metrics import RunMetrics
 
 MEMBERS = [a[0] for a in ranges.ASSIGNMENTS]
@@ -58,6 +72,23 @@ def cmd_fetch_s3(args):
     with _metrics(args) as rm:
         s3bulk.run(conn, rm, args.member, keep_bbl=args.keep_bbl)
     _print_progress(conn, args.member)
+
+
+def cmd_fetch_bbl(args):
+    conn = db.connect(config.DB_PATH)
+    print(f"{len(extras.pending_bbl(conn, args.member))} versions to fetch .bbl for", flush=True)
+    with _metrics(args) as rm:
+        extras.run_bbl(conn, rm, args.member, backup_dir=args.backup_dir)
+    rows = conn.execute("SELECT status, COUNT(*) FROM extra_fetch GROUP BY 1").fetchall()
+    print("bbl fetch:", dict(rows), flush=True)
+
+
+def cmd_parse(args):
+    conn = db.connect(config.DB_PATH)
+    with _metrics(args) as rm:
+        parser.run(conn, rm, args.member, workers=args.workers, force=args.force, limit=args.limit)
+    rows = conn.execute("SELECT status, COUNT(*) FROM parse_versions GROUP BY 1").fetchall()
+    print("parsed versions:", dict(rows), flush=True)
 
 
 def cmd_verify_s3(args):
@@ -149,13 +180,21 @@ def cmd_crawl(args):
 
 def cmd_stats(args):
     conn = db.connect(config.DB_PATH)
-    summary = stats.write(conn, args.out, member=args.member)
+    if args.milestone == 2:
+        summary = parsestats.write(conn, args.out, example_id=args.example)
+    else:
+        summary = stats.write(conn, args.out, member=args.member)
     print(json.dumps(summary, indent=2, default=str))
 
 
 def cmd_export(args):
     conn = db.connect(config.DB_PATH)
-    for table, (rows, shards) in export.run(conn, args.out).items():
+    results = {}
+    if args.tables in ("m1", "all"):
+        results |= export.run(conn, args.out)
+    if args.tables in ("m2", "all"):
+        results |= export.run_parsed(parser.parsed_dir(), args.out)
+    for table, (rows, shards) in results.items():
         print(f"{table}: {rows} rows in {shards} shard(s)")
 
 
@@ -203,6 +242,14 @@ def main():
     p.add_argument("--keep-bbl", action="store_true", help="also keep .bbl files")
     p = add("fetch-s3", cmd_fetch_s3, "fill latest versions from the S3 bulk archive", True)
     p.add_argument("--keep-bbl", action="store_true", help="also keep .bbl files")
+    p = add("fetch-bbl", cmd_fetch_bbl, "add .bbl files to crawled versions that lack a .bib")
+    p.add_argument("--member", choices=MEMBERS)
+    p.add_argument("--backup-dir", type=Path, help="write .bbl tar shards + DB snapshots here")
+    p = add("parse", cmd_parse, "Milestone 2: parse, standardize and deduplicate every version")
+    p.add_argument("--member", choices=MEMBERS)
+    p.add_argument("--workers", type=int, help="processes (default: CPU count)")
+    p.add_argument("--force", action="store_true", help="re-parse papers already parsed")
+    p.add_argument("--limit", type=int, help="first N papers only (for tests)")
     p = add("verify-s3", cmd_verify_s3, "compare S3-filled versions with export.arxiv.org")
     p.add_argument("--sample", type=int, default=20)
     p.add_argument("--keep-bbl", action="store_true")
@@ -219,9 +266,17 @@ def main():
     p.add_argument("--progress-every", type=float, default=5, help="minutes between reports")
 
     p = add("stats", cmd_stats, "write report statistics for the Jupyter Book")
+    p.add_argument("--milestone", type=int, choices=[1, 2], default=1)
+    p.add_argument("--example", help="arXiv ID of the example tree shown in the M2 report")
     p.add_argument("--member", choices=MEMBERS)
     p.add_argument("--out", type=Path, default=config.DATA_DIR / "stats")
     p = add("export", cmd_export, "write Parquet tables + per-paper metadata files")
+    p.add_argument(
+        "--tables",
+        choices=["m1", "m2", "all"],
+        default="m1",
+        help="m1: papers/references, m2: elements/hierarchy/bibtex",
+    )
     p.add_argument("--out", type=Path, default=config.EXPORT_DIR)
     p = add("backup", cmd_backup, "write an incremental backup")
     p.add_argument("dest", type=Path)
