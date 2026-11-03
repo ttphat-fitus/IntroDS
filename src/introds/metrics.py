@@ -123,6 +123,23 @@ class RunMetrics:
             with self._lock:
                 self._pending.append(row)
 
+    def record(self, stage, arxiv_id, duration_s, ok=True, n_items=1):
+        """Record work timed elsewhere (e.g. in a worker process)."""
+        row = (
+            self.run_id,
+            stage,
+            arxiv_id,
+            None,
+            n_items,
+            time.time() - duration_s,
+            duration_s,
+            0.0,
+            int(ok),
+            None,
+        )
+        with self._lock:
+            self._pending.append(row)
+
     def _rss(self):
         # Include child processes (if multiprocessing is used) to get whole-system RAM
         total = self._proc.memory_info().rss

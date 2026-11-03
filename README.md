@@ -58,6 +58,21 @@ On Google Colab, use [`src/colab_crawl.ipynb`](src/colab_crawl.ipynb): it mounts
 the latest backup, runs the crawl inside the notebook, and writes statistics at the end.
 Step-by-step instructions for team members: [`docs/guideme.md`](docs/guideme.md).
 
+### Milestone 2: parsing and standardization
+
+```bash
+python -m introds fetch-bbl --backup-dir ../data/bbl-backup   # add .bbl where a version has no .bib
+python -m introds parse                                       # all papers, one worker per CPU
+python -m introds stats --milestone 2 --out ../../introds-book/data/m2
+python -m introds export --tables m2                          # elements / hierarchy / bibtex Parquet
+```
+
+`parse` finds each version's root file, follows `\input` / `\include`, normalizes math, removes
+formatting, builds the hierarchy (headings, lists, sentences, formulas, figures), converts the
+bibliography (`.bib`, `\bibitem`, `.bbl`) to BibTeX, then deduplicates references and elements across
+versions. Results are stored per paper in `data/parsed/<paper>.json.gz`; the run is resumable
+(`--force` re-parses, `--limit N` for tests). Tests: `python -m pytest tests`.
+
 ## Output
 
 ```
@@ -89,8 +104,15 @@ src/
     ratelimit.py   per-host rate limiter
     metrics.py     timing, RAM and disk measurement
     backup.py      incremental backup / restore
-    stats.py       report statistics
+    stats.py       report statistics (M1)
     export.py      Parquet tables, per-paper metadata files
+    extras.py      .bbl files for versions without a .bib
+    latex.py       M2: root detection, \input gathering, cleanup, math normalization
+    structure.py   M2: hierarchy construction, sentence splitting
+    bibliography.py  M2: .bib / \bibitem / .bbl to BibTeX
+    parser.py      M2: per-paper pipeline, deduplication, parallel run
+    parsestats.py  M2: report statistics
+tests/             pytest suite for the parser
 docs/
   CHANGELOG.md     changes per milestone
   decisions.md     design decisions and their rationale

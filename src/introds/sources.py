@@ -84,9 +84,9 @@ def _classify(spool, keep):
     return "other", [], len(data), 1, 0
 
 
-def _write(arxiv_id, version, members):
+def _write(arxiv_id, version, members, clear=True):
     dest = version_dir(arxiv_id, version)
-    if dest.exists():  # leftovers of an interrupted attempt
+    if clear and dest.exists():  # leftovers of an interrupted attempt
         shutil.rmtree(dest)
     rows = []
     for rel, data in members:

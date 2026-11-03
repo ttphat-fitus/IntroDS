@@ -19,7 +19,7 @@ def get_secret(name):
         return None
     try:
         return userdata.get(name)
-    except (userdata.SecretNotFoundError, userdata.NotebookAccessError):
+    except Exception:  # noqa: BLE001 - missing secret, no access, or not inside a notebook kernel
         return None
 
 

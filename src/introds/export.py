@@ -5,6 +5,7 @@ Each paper folder under RAW_DIR also gets metadata.json and references.json, fol
 data organisation suggested by the spec.
 """
 
+import gzip
 import json
 import math
 
@@ -39,6 +40,41 @@ SCHEMAS = {
         ]
     ),
 }
+
+
+_DICT = pa.dictionary(pa.int32(), pa.string())
+SCHEMAS_M2 = {
+    "elements": pa.schema(
+        [
+            pa.field("element_id", pa.string(), nullable=False),
+            pa.field("arxiv_id", pa.string(), nullable=False),
+            ("kind", _DICT),
+            ("content", pa.string()),
+        ]
+    ),
+    "hierarchy": pa.schema(
+        [
+            pa.field("arxiv_id", pa.string(), nullable=False),
+            ("version", pa.int32()),
+            pa.field("element_id", pa.string(), nullable=False),
+            pa.field("parent_id", pa.string(), nullable=False),
+        ]
+    ),
+    "bibtex": pa.schema(
+        [
+            pa.field("arxiv_id", pa.string(), nullable=False),
+            pa.field("citation_key", pa.string(), nullable=False),
+            ("entry_type", _DICT),
+            ("title", pa.string()),
+            ("authors", pa.list_(pa.string())),
+            ("year", pa.int32()),
+            ("doi", pa.string()),
+            ("journal", pa.string()),
+            ("url", pa.string()),
+        ]
+    ),
+}
+M2_ROWS_PER_SHARD = {"elements": 500_000, "hierarchy": 1_000_000, "bibtex": 200_000}
 
 
 def _venue(journal_ref, s2_venue):
@@ -147,6 +183,78 @@ def write_paper_files(conn, papers):
             for r in refs
         ]
         (folder / "references.json").write_text(json.dumps(out, indent=1, ensure_ascii=False))
+
+
+def _m2_rows(payload):
+    aid = payload["arxiv_id"]
+    yield (
+        "elements",
+        [
+            {"element_id": e, "arxiv_id": aid, "kind": k, "content": c}
+            for e, k, c in payload["elements"]
+        ],
+    )
+    yield (
+        "hierarchy",
+        [
+            {"arxiv_id": aid, "version": v, "element_id": e, "parent_id": p}
+            for v, e, p in payload["hierarchy"]
+        ],
+    )
+    yield (
+        "bibtex",
+        [
+            {
+                "arxiv_id": aid,
+                "citation_key": b["key"],
+                "entry_type": b["entry_type"],
+                "title": b["title"],
+                "authors": b["authors"],
+                "year": b["year"],
+                "doi": b["doi"],
+                "journal": b["journal"],
+                "url": b["url"],
+            }
+            for b in payload["bibtex"]
+        ],
+    )
+
+
+def run_parsed(parsed_dir, out_dir=None):
+    """Milestone 2 tables from parsed/*.json.gz, streamed into Parquet shards."""
+    out_dir = out_dir or config.EXPORT_DIR
+    buffers, shards, counts = {t: [] for t in SCHEMAS_M2}, {t: [] for t in SCHEMAS_M2}, {}
+    dirs = {}
+    for name in SCHEMAS_M2:
+        dirs[name] = out_dir / "data" / name
+        dirs[name].mkdir(parents=True, exist_ok=True)
+        for old in dirs[name].glob("*.parquet"):
+            old.unlink()
+
+    def flush(name):
+        rows = buffers[name]
+        if not rows:
+            return
+        path = dirs[name] / f"part-{len(shards[name]):05d}.parquet"
+        pq.write_table(pa.Table.from_pylist(rows, schema=SCHEMAS_M2[name]), path)
+        shards[name].append(path)
+        counts[name] = counts.get(name, 0) + len(rows)
+        buffers[name] = []
+
+    for f in sorted(parsed_dir.glob("*.json.gz")):
+        payload = json.loads(gzip.decompress(f.read_bytes()))
+        for name, rows in _m2_rows(payload):
+            buffers[name].extend(rows)
+            if len(buffers[name]) >= M2_ROWS_PER_SHARD[name]:
+                flush(name)
+    result = {}
+    for name in SCHEMAS_M2:
+        flush(name)
+        total = len(shards[name])
+        for i, path in enumerate(shards[name]):  # final names: <table>-00000-of-00007.parquet
+            path.rename(dirs[name] / f"{name}-{i:05d}-of-{total:05d}.parquet")
+        result[name] = (counts.get(name, 0), total)
+    return result
 
 
 def run(conn, out_dir=None):
