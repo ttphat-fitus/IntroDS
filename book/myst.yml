@@ -1,0 +1,27 @@
+# Jupyter Book 2 (mystmd) configuration. Local preview: jupyter-book start --execute
+version: 1
+project:
+  title: "Introduction to Data Science - Group 15"
+  description: arXiv term project - crawling, hierarchical parsing, reference matching
+  authors:
+    - name: Group 15
+  github: https://github.com/ttphat-fitus/IntroDS-Book
+  # Live code: the "Run" button starts the notebook kernel on mybinder.org (requirements.txt,
+  # runtime.txt). mybinder.org servers accept cross-origin requests, so it also works from
+  # https://introds.opuslace.dev.
+  jupyter:
+    binder:
+      repo: ttphat-fitus/IntroDS-Book
+      ref: main
+  toc:
+    - file: intro.md
+    - title: "Milestone 1 - Data Crawling"
+      children:
+        - file: m1/crawling.ipynb
+    - title: "Milestone 2 - Parsing and Standardization"
+      children:
+        - file: m2/parsing.ipynb
+site:
+  template: book-theme
+  options:
+    logo_text: introDS - Group 15

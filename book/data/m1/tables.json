@@ -1,0 +1,107 @@
+{
+ "papers": {
+  "rows": 25000,
+  "shards": 1,
+  "columns": [
+   {
+    "name": "arxiv_id",
+    "type": "string",
+    "nullable": false
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "nullable": true
+   },
+   {
+    "name": "authors",
+    "type": "list<element: string>",
+    "nullable": true
+   },
+   {
+    "name": "submission_date",
+    "type": "string",
+    "nullable": true
+   },
+   {
+    "name": "revised_dates",
+    "type": "list<element: string>",
+    "nullable": true
+   },
+   {
+    "name": "venue",
+    "type": "string",
+    "nullable": true
+   }
+  ],
+  "sample": {
+   "arxiv_id": "2601.08157",
+   "title": "Global Existence for General Systems of Isentropic Gas Dynamics via a Weighted Pressure Perturbation Approach",
+   "authors": [
+    "Kewang Chen"
+   ],
+   "submission_date": "2026-01-13T02:42:49+00:00",
+   "revised_dates": [
+    "2026-01-14T16:18:32+00:00",
+    "2026-01-21T16:46:45+00:00"
+   ],
+   "venue": null
+  }
+ },
+ "references": {
+  "rows": 414282,
+  "shards": 5,
+  "columns": [
+   {
+    "name": "arxiv_id",
+    "type": "string",
+    "nullable": false
+   },
+   {
+    "name": "ref_arxiv_id",
+    "type": "string",
+    "nullable": false
+   },
+   {
+    "name": "ref_title",
+    "type": "string",
+    "nullable": true
+   },
+   {
+    "name": "ref_authors",
+    "type": "list<element: string>",
+    "nullable": true
+   },
+   {
+    "name": "ref_submission_date",
+    "type": "string",
+    "nullable": true
+   },
+   {
+    "name": "ref_s2_id",
+    "type": "string",
+    "nullable": true
+   }
+  ],
+  "sample": {
+   "arxiv_id": "2601.08156",
+   "ref_arxiv_id": "2509.25250",
+   "ref_title": "Memory Management and Contextual Consistency for Long-Running Low-Code Agents",
+   "ref_authors": [
+    "Jie Xu"
+   ],
+   "ref_submission_date": "2025-09-27",
+   "ref_s2_id": "229315ab83b414b83c3534b9d7b42a0178e8beda"
+  }
+ },
+ "layout": {
+  "paper": "2601.08157",
+  "files": [
+   "2601-08157/metadata.json",
+   "2601-08157/references.json",
+   "2601-08157/v1/final_submit_2025_1201_2.tex",
+   "2601-08157/v2/Paper_correction_kewang_2026-01-14.tex",
+   "2601-08157/v3/paper_kewang_yuguang_delta_zero_2026_01_19.tex"
+  ]
+ }
+}

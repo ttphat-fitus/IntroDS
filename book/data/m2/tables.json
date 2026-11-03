@@ -1,0 +1,133 @@
+{
+ "elements": {
+  "rows": 11882332,
+  "shards": 24,
+  "columns": [
+   {
+    "name": "element_id",
+    "type": "string",
+    "nullable": false
+   },
+   {
+    "name": "arxiv_id",
+    "type": "string",
+    "nullable": false
+   },
+   {
+    "name": "kind",
+    "type": "dictionary<values=string, indices=int32, ordered=0>",
+    "nullable": true
+   },
+   {
+    "name": "content",
+    "type": "string",
+    "nullable": true
+   }
+  ],
+  "sample": {
+   "element_id": "2601-08156#root1",
+   "arxiv_id": "2601.08156",
+   "kind": "document",
+   "content": "Project Synapse: A Hierarchical Multi-Agent Framework with Hybrid Memory for Autonomous Resolution of Last-Mile Delivery Disruptions (v1)"
+  }
+ },
+ "hierarchy": {
+  "rows": 14509536,
+  "shards": 15,
+  "columns": [
+   {
+    "name": "arxiv_id",
+    "type": "string",
+    "nullable": false
+   },
+   {
+    "name": "version",
+    "type": "int32",
+    "nullable": true
+   },
+   {
+    "name": "element_id",
+    "type": "string",
+    "nullable": false
+   },
+   {
+    "name": "parent_id",
+    "type": "string",
+    "nullable": false
+   }
+  ],
+  "sample": {
+   "arxiv_id": "2601.08156",
+   "version": 1,
+   "element_id": "2601-08156#root1",
+   "parent_id": "2601-08156#root1"
+  }
+ },
+ "bibtex": {
+  "rows": 1001921,
+  "shards": 6,
+  "columns": [
+   {
+    "name": "arxiv_id",
+    "type": "string",
+    "nullable": false
+   },
+   {
+    "name": "citation_key",
+    "type": "string",
+    "nullable": false
+   },
+   {
+    "name": "entry_type",
+    "type": "dictionary<values=string, indices=int32, ordered=0>",
+    "nullable": true
+   },
+   {
+    "name": "title",
+    "type": "string",
+    "nullable": true
+   },
+   {
+    "name": "authors",
+    "type": "list<element: string>",
+    "nullable": true
+   },
+   {
+    "name": "year",
+    "type": "int32",
+    "nullable": true
+   },
+   {
+    "name": "doi",
+    "type": "string",
+    "nullable": true
+   },
+   {
+    "name": "journal",
+    "type": "string",
+    "nullable": true
+   },
+   {
+    "name": "url",
+    "type": "string",
+    "nullable": true
+   }
+  ],
+  "sample": {
+   "arxiv_id": "2601.08156",
+   "citation_key": "ref1",
+   "entry_type": "misc",
+   "title": "ResearchGate, 2024",
+   "authors": [
+    "A Review of Last-Mile Delivery Optimization: Strategies",
+    "Technologies",
+    "Drone Integration",
+    "Future Trends"
+   ],
+   "year": 2024,
+   "doi": null,
+   "journal": null,
+   "url": "https://www.researchgate.net/publication/389241912"
+  }
+ }
+}
