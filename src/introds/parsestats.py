@@ -1,5 +1,6 @@
 """Statistics of the Milestone 2 parse, written as small files for the Jupyter Book:
-summary.json, versions.parquet, papers.parquet, resources.parquet, runs.parquet, example.json."""
+summary.json, versions.parquet, papers.parquet, resources.parquet, runs.parquet, example.json,
+tables.json."""
 
 import collections
 import gzip
@@ -8,9 +9,12 @@ import re
 from pathlib import Path
 
 import pandas as pd
+import pyarrow.parquet as pq
 
 from . import config, parser
 from .metrics import dir_size
+
+TABLES = ("elements", "hierarchy", "bibtex")
 
 
 def _scan_parsed(parsed_dir):
@@ -38,6 +42,30 @@ def _example(parsed_dir, arxiv_id):
         "hierarchy": payload["hierarchy"],
         "bibtex": payload["bibtex"][:20],
     }
+
+
+def describe_tables(shards, opener=open):
+    """Rows, shard count, columns and one sample row per table. `shards` maps a table name to its
+    Parquet files; `opener` opens one for binary reading (a remote file system's `open` also works)."""
+    tables = {}
+    for name, files in shards.items():
+        rows = 0
+        for i, path in enumerate(files):
+            with opener(path, "rb") as f:
+                parquet = pq.ParquetFile(f)
+                rows += parquet.metadata.num_rows
+                if i == 0:
+                    fields = parquet.schema_arrow
+                    sample = next(parquet.iter_batches(batch_size=1)).to_pylist()[0]
+        tables[name] = {
+            "rows": rows,
+            "shards": len(files),
+            "columns": [
+                {"name": c.name, "type": str(c.type), "nullable": c.nullable} for c in fields
+            ],
+            "sample": {k: v[:200] if isinstance(v, str) else v for k, v in sample.items()},
+        }
+    return tables
 
 
 def write(conn, out_dir, example_id=None):
@@ -105,12 +133,14 @@ def write(conn, out_dir, example_id=None):
         "ram_avg_bytes": float(samples.rss_bytes.mean()) if len(samples) else None,
         "output_parsed_bytes": dir_size(parsed_dir),
         "output_tables_bytes": sum(
-            dir_size(m2_tables / t)
-            for t in ("elements", "hierarchy", "bibtex")
-            if (m2_tables / t).exists()
+            dir_size(m2_tables / t) for t in TABLES if (m2_tables / t).exists()
         ),
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2, default=str))
+    shards = {t: sorted((m2_tables / t).glob("*.parquet")) for t in TABLES}
+    if all(shards.values()):
+        tables = describe_tables(shards)
+        (out / "tables.json").write_text(json.dumps(tables, indent=1, ensure_ascii=False))
     versions.to_parquet(out / "versions.parquet", index=False)
     papers.to_parquet(out / "papers.parquet", index=False)
     step = max(1, len(samples) // 5000)

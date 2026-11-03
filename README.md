@@ -1,6 +1,6 @@
 # introDS
 
-Report (Jupyter Book): <GitHub Pages link>
+Report (Jupyter Book): <https://introds.opuslace.dev>, sources in [`book/`](book/)
 
 ## Environment
 
@@ -16,7 +16,7 @@ On Colab, use Secrets (key icon) instead of `.env`, named `S2_API_KEY` and `HF_T
 
 ## Contributing
 
-`main` is protected: create a branch, open a pull request, and it is squash-merged.
+Create a branch and open a pull request; it is squash-merged into `main`.
 Commit messages and PR titles must follow [Conventional Commits](https://www.conventionalcommits.org):
 
 ```
@@ -73,6 +73,22 @@ bibliography (`.bib`, `\bibitem`, `.bbl`) to BibTeX, then deduplicates reference
 versions. Results are stored per paper in `data/parsed/<paper>.json.gz`; the run is resumable
 (`--force` re-parses, `--limit N` for tests). Tests: `python -m pytest tests`.
 
+Parsing reads the merged corpus. Rebuild it first when each member crawled separately: `restore` each
+member's backup, then `python -m introds merge <member>.sqlite ...`. Benchmark on a Colab CPU runtime
+under GNU time: `/usr/bin/time -v -o time_parse.txt python -m introds parse`.
+
+### Report
+
+[`book/`](book/) holds the files of the Jupyter Book. It is compiled and deployed from
+[IntroDS-Book](https://github.com/ttphat-fitus/IntroDS-Book), of which `book/` is a copy, so its
+figures and tables are generated at build time from the small statistics files in `book/data/`:
+
+```bash
+cd book
+pip install -r requirements.txt jupyter-book
+jupyter-book build --html --execute   # output in _build/html
+```
+
 ## Output
 
 ```
@@ -82,8 +98,12 @@ data/
     v1/ v2/ v3/                .tex / .bib files of each version, original relative paths
     metadata.json              title, authors, dates, venue, per-version status
     references.json            every Semantic Scholar reference (with or without arXiv ID)
+  parsed/2601-08157.json.gz    elements, hierarchy and unified BibTeX entries of one paper
   hf/data/papers/*.parquet     final dataset tables (Hugging Face layout)
   hf/data/references/*.parquet
+  hf/data/elements/*.parquet
+  hf/data/hierarchy/*.parquet
+  hf/data/bibtex/*.parquet
 ```
 
 ## Layout
@@ -113,6 +133,7 @@ src/
     parser.py      M2: per-paper pipeline, deduplication, parallel run
     parsestats.py  M2: report statistics
 tests/             pytest suite for the parser
+book/              Jupyter Book: report notebooks and the statistics they read
 docs/
   CHANGELOG.md     changes per milestone
   decisions.md     design decisions and their rationale

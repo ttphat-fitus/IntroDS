@@ -5,12 +5,13 @@ import json
 import sys
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from introds import bibliography as bib
-from introds import latex, structure
+from introds import latex, parsestats, structure
 
 # ---------------------------------------------------------------- multi-file gathering
 
@@ -255,3 +256,14 @@ def test_parse_paper_shares_identical_elements_across_versions(tmp_path, monkeyp
     assert any(contents[e] == "Same sentence." for e in shared)
     assert any(contents[e] == "We cite \\cite{new}." for e in shared)  # key renamed, then merged
     assert [b["key"] for b in payload["bibtex"]] == ["new"]
+
+
+def test_describe_tables(tmp_path):
+    for i in range(2):
+        pd.DataFrame({"arxiv_id": [f"2601.0000{i}"], "year": [2026]}).to_parquet(
+            tmp_path / f"part-{i}.parquet"
+        )
+    table = parsestats.describe_tables({"bibtex": sorted(tmp_path.glob("*.parquet"))})["bibtex"]
+    assert (table["rows"], table["shards"]) == (2, 2)
+    assert [c["name"] for c in table["columns"]] == ["arxiv_id", "year"]
+    assert table["sample"] == {"arxiv_id": "2601.00000", "year": 2026}

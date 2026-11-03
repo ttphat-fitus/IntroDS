@@ -9,6 +9,11 @@ data/
 *.tar
 *.gz
 
+# Small report statistics the Jupyter Book reads when it is compiled
+!book/data/
+!book/data/**
+book/_build/
+
 # Local agent instructions
 CLAUDE.md
 AGENTS.md

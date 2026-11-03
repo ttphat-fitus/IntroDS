@@ -11,6 +11,8 @@ Fine-grained history lives in git commits.
 - `stats --milestone 2` (report data, example tree) and `export --tables m2` (`elements`, `hierarchy`, `bibtex` Parquet shards).
 - `tests/test_parse.py`: pytest suite covering the spec rules on small LaTeX snippets.
 - revtex / APS `.bbl` entries are read field by field from `\bibinfo{field}{value}`.
+- `stats --milestone 2` also writes `tables.json` (rows, shards, schema, sample row of each exported table).
+- `book/`: copy of the Jupyter Book sources and report statistics.
 
 ### Fixed
 - Letter accents (`\t`, `\u`, `\b`, ...) no longer eat the start of `\textbf`, `\url`, `\bibinfo` in BibTeX values; forced line breaks are removed from titles.

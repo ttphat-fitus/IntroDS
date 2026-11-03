@@ -1,6 +1,7 @@
 # Local hooks. Install once per clone: pre-commit install
 # CI re-checks commit messages and PR titles, so skipping hooks with --no-verify does not get past review.
 default_install_hook_types: [pre-commit, commit-msg]
+exclude: ^book/data/  # generated report statistics, kept byte for byte
 
 repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
@@ -13,7 +14,7 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      - id: check-added-large-files  # data must never be committed
+      - id: check-added-large-files  # data must never be committed (book/data is the one exception)
         args: [--maxkb=500]
       - id: detect-private-key
       - id: check-merge-conflict
