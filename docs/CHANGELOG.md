@@ -6,6 +6,7 @@ Fine-grained history lives in git commits.
 ## Milestone 2 - Parsing and Standardization
 
 ### Added
+- `publish --member mX --src DIR --out DIR [--repo USER/NAME] [--public]`: slices the final tables to one member's ID range, writes the dataset card and uploads it to a personal Hugging Face dataset.
 - `fetch-bbl`: adds `.bbl` bibliographies to crawled versions that have one but no `.bib` (new table `extra_fetch`, tar-shard backups).
 - `parse`: root detection, transitive `\input` / `\include` / `\subfile` / `\import`, comment removal, formatting cleanup, math normalization, hierarchy construction, sentence splitting, BibTeX extraction from `.bib` / `\bibitem` / `.bbl` (natbib and biblatex), reference and element deduplication across versions; parallel and resumable (tables `parse_papers`, `parse_versions`).
 - `stats --milestone 2` (report data, example tree) and `export --tables m2` (`elements`, `hierarchy`, `bibtex` Parquet shards).

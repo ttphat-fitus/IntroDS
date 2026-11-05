@@ -15,6 +15,7 @@ from . import (
     extras,
     parser,
     parsestats,
+    publish,
     ranges,
     refs,
     s3bulk,
@@ -198,6 +199,13 @@ def cmd_export(args):
         print(f"{table}: {rows} rows in {shards} shard(s)")
 
 
+def cmd_publish(args):
+    publish.build(args.src, args.member, args.out, args.repo or "<user>/<dataset>")
+    if args.repo:
+        publish.upload(args.out, args.repo, private=not args.public)
+        print(f"Uploaded to https://huggingface.co/datasets/{args.repo}")
+
+
 def cmd_backup(args):
     print(f"{backup.backup(config.DB_PATH, args.dest)} versions added to {args.dest}")
 
@@ -278,6 +286,16 @@ def main():
         help="m1: papers/references, m2: elements/hierarchy/bibtex",
     )
     p.add_argument("--out", type=Path, default=config.EXPORT_DIR)
+    p = add(
+        "publish",
+        cmd_publish,
+        "slice the final tables to one member's range, optionally upload",
+        True,
+    )
+    p.add_argument("--src", type=Path, required=True, help="folder with data/<table>/*.parquet")
+    p.add_argument("--out", type=Path, required=True, help="folder for the sliced dataset")
+    p.add_argument("--repo", help="Hugging Face dataset to upload to, e.g. <user>/introds-m5")
+    p.add_argument("--public", action="store_true", help="make the dataset repository public")
     p = add("backup", cmd_backup, "write an incremental backup")
     p.add_argument("dest", type=Path)
     p = add("restore", cmd_restore, "rebuild the data directory from a backup")
