@@ -1,6 +1,6 @@
 # introDS
 
-Report (Jupyter Book): <https://introds.opuslace.dev>, sources in [`book/`](book/)
+Report (Jupyter Book): <https://ttphat-fitus.github.io/IntroDS-Book/>, sources in [`book/`](book/)
 
 ## Environment
 

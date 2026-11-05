@@ -27,7 +27,7 @@ configs:
 # introDS Group 15 - arXiv dataset, range of {member}
 
 Slice of the Introduction to Data Science term project (HCMUS) of Group 15, built with
-[`introds`](https://github.com/ttphat-fitus/IntroDS). Report: <https://introds.opuslace.dev>.
+[`introds`](https://github.com/ttphat-fitus/IntroDS). Report: <https://ttphat-fitus.github.io/IntroDS-Book/>.
 
 It covers the arXiv papers `{first}` to `{last}` ({n_papers:,} papers), every version of each paper,
 and their references from Semantic Scholar.
