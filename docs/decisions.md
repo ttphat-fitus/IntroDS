@@ -3,6 +3,13 @@
 Short records of choices that are not obvious from the code. Newest first.
 Format: date - decision - why - alternatives considered.
 
+## 2026-11-08 - Manual labels: 10 papers per member, 25 entries offered per paper
+- **Why:** the spec asks for 5 papers per member and at least 20 labeled entries each; labeling 10 papers gives more training signal and the test/validation papers (1 per member each) can be hand-labeled while 8 stay for training. Offering 25 entries lets the labeler skip damaged ones and still reach 20. Papers are picked at random among those with >= 20 BibTeX entries and 5 to 150 crawled references (about 3,000 per range), seed 15, so the pick is reproducible.
+- **Alternatives:** labeling every entry (about 40 per paper, 2x the work), picking papers by hand (selection bias).
+
+## 2026-11-08 - `ref_submission_date` is the Semantic Scholar publication date
+- **Why:** Semantic Scholar has no submission date. A TA confirmed that `publicationDate` is accepted and that the column name only keeps the table consistent with `papers`. 99.8% of the rows hold a full date; the rest fall back to the year.
+
 ## 2026-10-30 - Milestone 2 interpretation of unspecified points
 - **`.bbl` files** are fetched (`fetch-bbl`) for versions that have a `.bbl` but no `.bib` (2,913 versions, ~10% had no bibliography source at all) and used only to fill that gap. Result: all 2,913 fetched; versions without any bibliography source fell from 3,322 to 445 (1.5%).
 - **Element kinds:** `document`, `heading`, `list`, `item`, `sentence`, `formula`, `figure`. Tables, algorithms and code listings are figures (the spec treats tables as figures).

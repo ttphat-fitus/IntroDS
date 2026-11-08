@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>introDS labelling</title>
+<style>
+  :root { color-scheme: light dark; --bg: #fff; --fg: #1c1c1e; --mute: #6b6b70; --line: #d8d8de; --card: #f6f6f9; --ok: #1a7f4b; --pick: #dbe9ff; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #17171a; --fg: #ececf0; --mute: #9a9aa3; --line: #34343b; --card: #202025; --ok: #4cc38a; --pick: #24385e; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.45 system-ui, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; display: flex; gap: 12px; align-items: center; padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 16px; margin: 0; flex: 1; }
+  button, input { font: inherit; color: inherit; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; }
+  button { cursor: pointer; }
+  #app { display: grid; grid-template-columns: 260px 1fr; gap: 16px; padding: 16px; }
+  nav { display: flex; flex-direction: column; gap: 6px; align-self: start; position: sticky; top: 64px; }
+  nav .paper { text-align: left; }
+  nav .paper.active { border-color: var(--fg); }
+  nav .paper.done { border-left: 4px solid var(--ok); }
+  main h2 { margin: 0 0 4px; font-size: 18px; }
+  .hint { color: var(--mute); margin: 6px 0 14px; }
+  .card { border: 1px solid var(--line); border-radius: 8px; margin-bottom: 10px; background: var(--card); }
+  .card.set { border-left: 4px solid var(--ok); }
+  .card.open { border-color: var(--fg); }
+  .head { display: flex; gap: 10px; align-items: baseline; padding: 8px 12px; cursor: pointer; }
+  .head .tag, .head .status { color: var(--mute); font-size: 13px; }
+  .head .status { margin-left: auto; }
+  .fields { padding: 0 12px 10px; }
+  .row { display: flex; gap: 10px; } .row .name { width: 60px; flex: none; color: var(--mute); }
+  .picker { border-top: 1px solid var(--line); padding: 10px 12px; }
+  .bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; } .bar input { flex: 1; min-width: 180px; }
+  .cands { max-height: 360px; overflow: auto; }
+  .cand { padding: 6px 8px; border-radius: 6px; cursor: pointer; } .cand:hover { background: var(--bg); }
+  .cand.chosen { background: var(--pick); } .cand .t { font-weight: 600; } .cand .m { color: var(--mute); font-size: 13px; }
+  @media (max-width: 800px) { #app { grid-template-columns: 1fr; } nav { position: static; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>introDS labelling</h1>
+  <span id="total"></span>
+  <label>Import <input id="import" type="file" accept=".jsonl,.json,.txt"></label>
+  <button id="export">Download labels</button>
+</header>
+<div id="app"><nav id="papers"></nav><main id="main"></main></div>
+<script>
+const DATA = __DATA__;
+const MIN = DATA.min_entries, KEY = "introds-labels-" + DATA.member, SKIP = "__skip__", NONE = "__none__";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+let cur = 0, open = null, query = "";
+const k = (p, e) => p.arxiv_id + "|" + e.citation_key;
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+const tokens = s => new Set((s || "").toLowerCase().match(/[a-z0-9]+/g) || []);
+const labeled = p => p.entries.filter(e => state[k(p, e)] && state[k(p, e)] !== SKIP).length;
+
+// candidates are only sorted by title overlap so the likely ones come first; the choice is yours
+function score(entry, ref) {
+  const a = tokens(entry.title), b = tokens(ref.ref_title);
+  if (!a.size || !b.size) return 0;
+  let n = 0; a.forEach(t => { if (b.has(t)) n++; });
+  return n / (a.size + b.size - n);
+}
+
+function render() {
+  const nav = document.getElementById("papers"); nav.replaceChildren();
+  DATA.papers.forEach((p, i) => {
+    const n = labeled(p);
+    const b = el("button", "paper" + (i === cur ? " active" : "") + (n >= MIN ? " done" : ""), `${i + 1}. ${p.arxiv_id}  (${n}/${MIN})`);
+    b.onclick = () => { cur = i; open = null; query = ""; render(); window.scrollTo(0, 0); };
+    nav.append(b);
+  });
+  const total = DATA.papers.reduce((s, p) => s + Math.min(labeled(p), MIN), 0);
+  document.getElementById("total").textContent = `${total} / ${MIN * DATA.papers.length} required labels`;
+  const p = DATA.papers[cur], main = document.getElementById("main"); main.replaceChildren();
+  const link = el("a", "", "arXiv:" + p.arxiv_id); link.href = "https://arxiv.org/abs/" + p.arxiv_id; link.target = "_blank"; link.rel = "noopener";
+  main.append(el("h2", "", p.title || p.arxiv_id), link,
+    el("p", "hint", `${p.refs.length} candidate references, ${p.entries.length} entries. Label at least ${MIN}; skip the ones you cannot judge.`));
+  p.entries.forEach(e => main.append(card(p, e)));
+  const o = document.querySelector(".card.open"); if (o) o.scrollIntoView({ block: "nearest" });
+}
+
+function card(p, e) {
+  const key = k(p, e), v = state[key], isOpen = open === key;
+  const c = el("section", "card" + (v ? " set" : "") + (isOpen ? " open" : ""));
+  const head = el("div", "head");
+  head.append(el("b", "", e.citation_key), el("span", "tag", e.entry_type || ""),
+    el("span", "status", v === SKIP ? "skipped" : v === NONE ? "no match" : v ? "-> " + v : ""));
+  head.onclick = () => { open = isOpen ? null : key; query = ""; render(); };
+  c.append(head);
+  const f = el("div", "fields");
+  [["title", e.title], ["authors", (e.authors || []).join("; ")], ["year", e.year], ["venue", e.journal], ["doi", e.doi], ["url", e.url]]
+    .forEach(([name, x]) => { if (x) { const r = el("div", "row"); r.append(el("span", "name", name), el("span", "", String(x))); f.append(r); } });
+  c.append(f);
+  if (isOpen) c.append(picker(p, e, key));
+  return c;
+}
+
+function picker(p, e, key) {
+  const box = el("div", "picker"), bar = el("div", "bar"), ul = el("div", "cands");
+  const q = el("input"); q.placeholder = "filter candidates (title, author, arXiv id)"; q.value = query;
+  const act = (label, v) => { const b = el("button", "", label); b.onclick = () => choose(key, v); return b; };
+  bar.append(q, act("No matching reference", NONE), act("Skip (unusable entry)", SKIP), act("Clear", undefined));
+  box.append(bar, ul);
+  const ranked = p.refs.map(r => [score(e, r), r]).sort((a, b) => b[0] - a[0]).map(x => x[1]);
+  function list() {
+    ul.replaceChildren();
+    const t = query.toLowerCase();
+    ranked.filter(r => !t || (r.ref_title + " " + (r.ref_authors || []).join(" ") + " " + r.ref_arxiv_id).toLowerCase().includes(t)).forEach(r => {
+      const row = el("div", "cand" + (state[key] === r.ref_arxiv_id ? " chosen" : "")), a = r.ref_authors || [];
+      row.append(el("div", "t", r.ref_title || "(no title)"),
+        el("div", "m", a.slice(0, 4).join(", ") + (a.length > 4 ? " et al." : "") + " - " + (r.ref_submission_date || "") + " - " + r.ref_arxiv_id));
+      row.onclick = () => choose(key, r.ref_arxiv_id);
+      ul.append(row);
+    });
+  }
+  q.oninput = () => { query = q.value; list(); };
+  list();
+  return box;
+}
+
+function choose(key, v) {
+  if (v === undefined) delete state[key]; else state[key] = v;
+  save(); query = "";
+  const p = DATA.papers[cur], next = p.entries.find(e => !state[k(p, e)]);
+  open = v !== undefined && next ? k(p, next) : null;
+  render();
+}
+
+document.getElementById("export").onclick = () => {
+  const short = DATA.papers.filter(p => labeled(p) < MIN).map(p => p.arxiv_id);
+  if (short.length && !confirm(`Fewer than ${MIN} labels for: ${short.join(", ")}.\nDownload anyway?`)) return;
+  const lines = [];
+  DATA.papers.forEach(p => p.entries.forEach(e => {
+    const v = state[k(p, e)];
+    if (v && v !== SKIP) lines.push(JSON.stringify({ arxiv_id: p.arxiv_id, citation_key: e.citation_key, groundtruth_arxiv_id: v === NONE ? null : v, method: "manual", labeler: DATA.member }));
+  }));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([lines.join("\n") + "\n"], { type: "application/x-ndjson" }));
+  a.download = `labels-${DATA.member}.jsonl`; a.click();
+};
+
+document.getElementById("import").onchange = async ev => {
+  const text = await ev.target.files[0].text();
+  text.split("\n").filter(Boolean).forEach(l => { const r = JSON.parse(l); state[r.arxiv_id + "|" + r.citation_key] = r.groundtruth_arxiv_id === null ? NONE : r.groundtruth_arxiv_id; });
+  save(); render();
+};
+
+render();
+</script>
+</body>
+</html>

@@ -13,6 +13,7 @@ from . import (
     discover,
     export,
     extras,
+    label,
     parser,
     parsestats,
     publish,
@@ -206,6 +207,23 @@ def cmd_publish(args):
         print(f"Uploaded to https://huggingface.co/datasets/{args.repo}")
 
 
+def cmd_label_prepare(args):
+    tasks, pool = label.prepare(
+        args.src, args.member, args.out, args.papers, args.per_paper, args.seed
+    )
+    entries = sum(len(p["entries"]) for p in tasks["papers"])
+    print(f"{args.papers} of {pool} eligible papers, {entries} entries to label -> {args.out}")
+    print(f"Open {args.out / 'label.html'} in a browser")
+
+
+def cmd_label_check(args):
+    problems, summary = label.check(args.labels, args.tasks)
+    print(json.dumps(summary, indent=2))
+    if problems:
+        raise SystemExit("Problems:\n" + "\n".join(problems))
+    print("Labels are valid")
+
+
 def cmd_backup(args):
     print(f"{backup.backup(config.DB_PATH, args.dest)} versions added to {args.dest}")
 
@@ -296,6 +314,15 @@ def main():
     p.add_argument("--out", type=Path, required=True, help="folder for the sliced dataset")
     p.add_argument("--repo", help="Hugging Face dataset to upload to, e.g. <user>/introds-m5")
     p.add_argument("--public", action="store_true", help="make the dataset repository public")
+    p = add("label-prepare", cmd_label_prepare, "pick papers and build the labelling page", True)
+    p.add_argument("--src", type=Path, required=True, help="folder with data/<table>/*.parquet")
+    p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--papers", type=int, default=10)
+    p.add_argument("--per-paper", type=int, default=25, help="entries offered per paper (>= 20)")
+    p.add_argument("--seed", type=int, default=15)
+    p = add("label-check", cmd_label_check, "validate a labels file")
+    p.add_argument("labels", type=Path)
+    p.add_argument("--tasks", type=Path, required=True, help="tasks.json from label-prepare")
     p = add("backup", cmd_backup, "write an incremental backup")
     p.add_argument("dest", type=Path)
     p = add("restore", cmd_restore, "rebuild the data directory from a backup")

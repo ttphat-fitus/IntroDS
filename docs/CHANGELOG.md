@@ -3,6 +3,12 @@
 Grouped by milestone. One line per user-visible change (new command, schema change, behaviour change).
 Fine-grained history lives in git commits.
 
+## Milestone 3 - Matching
+
+### Added
+- `label-prepare` / `label-check`: pick 10 papers per member, build a self-contained labelling page, validate the labels (`docs/guide-me-to-label.md`).
+- `docs/hf-structure.md`: layout of the personal Hugging Face submissions.
+
 ## Milestone 2 - Parsing and Standardization
 
 ### Added
