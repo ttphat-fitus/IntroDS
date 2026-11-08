@@ -8,7 +8,7 @@ project:
   github: https://github.com/ttphat-fitus/IntroDS-Book
   # Live code: the "Run" button starts the notebook kernel on mybinder.org (requirements.txt,
   # runtime.txt). mybinder.org servers accept cross-origin requests, so it also works from
-  # https://introds.opuslace.dev.
+  # https://ttphat-fitus.github.io.
   jupyter:
     binder:
       repo: ttphat-fitus/IntroDS-Book

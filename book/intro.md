@@ -30,7 +30,7 @@ Each member was assigned about 5,000 arXiv IDs.
 - Dataset (Hugging Face, Parquet): [`ttphat/introds-arxiv`](https://huggingface.co/datasets/ttphat/introds-arxiv),
   currently the `papers`, `references`, `elements`, `hierarchy` and `bibtex` tables; it becomes
   public with Milestone 3.
-- This report: <https://introds.opuslace.dev> (source: <https://github.com/ttphat-fitus/IntroDS-Book>)
+- This report: <https://ttphat-fitus.github.io/IntroDS-Book/> (source: <https://github.com/ttphat-fitus/IntroDS-Book>)
 
 ## How this book is built
 

@@ -1,6 +1,6 @@
 # introDS
 
-Report (Jupyter Book): <https://introds.opuslace.dev>, sources in [`book/`](book/)
+Report (Jupyter Book): <https://ttphat-fitus.github.io/IntroDS-Book/>, sources in [`book/`](book/)
 
 ## Environment
 
@@ -76,6 +76,17 @@ versions. Results are stored per paper in `data/parsed/<paper>.json.gz`; the run
 Parsing reads the merged corpus. Rebuild it first when each member crawled separately: `restore` each
 member's backup, then `python -m introds merge <member>.sqlite ...`. Benchmark on a Colab CPU runtime
 under GNU time: `/usr/bin/time -v -o time_parse.txt python -m introds parse`.
+
+### Dataset
+
+Each member publishes the tables of their own ID range as a dataset on their Hugging Face account.
+`--src` is a folder with `data/<table>/*.parquet` (the group dataset); the dataset is created private
+unless `--public` is given. `HF_TOKEN` is read from `.env` or Colab Secrets.
+
+```bash
+python -m introds publish --member m5 --src ../data/all/hf-full --out ../data/publish/m5 \
+    --repo <user>/introds-m5 --public
+```
 
 ### Report
 

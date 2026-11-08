@@ -11,7 +11,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from introds import bibliography as bib
-from introds import latex, parsestats, structure
+from introds import latex, parsestats, publish, structure
 
 # ---------------------------------------------------------------- multi-file gathering
 
@@ -267,3 +267,16 @@ def test_describe_tables(tmp_path):
     assert (table["rows"], table["shards"]) == (2, 2)
     assert [c["name"] for c in table["columns"]] == ["arxiv_id", "year"]
     assert table["sample"] == {"arxiv_id": "2601.00000", "year": 2026}
+
+
+def test_publish_keeps_only_the_member_range(tmp_path):
+    ids = ["2601.08155", "2601.08156", "2601.13155", "2601.13156", "2607.08694"]
+    for table in publish.TABLES:
+        folder = tmp_path / "src" / "data" / table
+        folder.mkdir(parents=True)
+        pd.DataFrame({"arxiv_id": ids, "x": range(5)}).to_parquet(folder / "part-0.parquet")
+    counts = publish.build(tmp_path / "src", "m5", tmp_path / "out", "user/introds-m5")
+    assert counts["papers"] == (2, 1)
+    kept = pd.read_parquet(tmp_path / "out" / "data" / "bibtex")
+    assert kept.arxiv_id.tolist() == ["2601.08156", "2601.13155"]
+    assert "config_name: elements" in (tmp_path / "out" / "README.md").read_text()
